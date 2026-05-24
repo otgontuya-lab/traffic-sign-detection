@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Замын тэмдэг таних</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --blue:    #2563EB;
+  --blue-dk: #1D4ED8;
+  --blue-lt: #EFF6FF;
+  --blue-md: #DBEAFE;
+  --text:    #1E293B;
+  --sub:     #64748B;
+  --border:  #E2E8F0;
+  --bg:      #F1F5F9;
+  --white:   #FFFFFF;
+  --green:   #16A34A;
+  --red:     #DC2626;
+  --orange:  #EA580C;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: #CBD5E1;
+  font-family: 'Nunito', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+  padding: 16px;
+}
+
+.phone {
+  width: min(390px, calc(100vw - 32px));
+  height: min(844px, calc(100vh - 32px));
+  aspect-ratio: 390 / 844;
+  background: var(--bg);
+  border-radius: 50px;
+  box-shadow:
+    0 0 0 10px #111,
+    0 0 0 12px #333,
+    0 20px 50px rgba(0,0,0,.28);
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.notch {
+  position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 32px;
+  background: #111; border-radius: 0 0 18px 18px;
+  z-index: 200;
+}
+
+.statusbar {
+  height: 44px; background: var(--white);
+  display: flex; align-items: flex-end; justify-content: space-between;
+  padding: 0 24px 6px;
+  font-size: 13px; font-weight: 700;
+  flex-shrink: 0; position: relative; z-index: 10;
+}
+
+.screen { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+.screen.active { display: flex; }
+
+#sHome {
+  background: #f3f3f3;
+}
+
+.home-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.home-header {
+  background: #f3f3f3;
+  padding: 28px 22px 18px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+  position: relative;
+  z-index: 5;
+}
+
+.home-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: #3b6fb6;
+  line-height: 1.3;
+}
+
+.home-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px 90px;
+  text-align: center;
+  background: #f3f3f3;
+}
+
+.home-text {
+  font-size: 24px;
+  font-weight: 800;
+  line-height: 1.35;
+  text-align: center;
+  letter-spacing: -0.6px;
+  margin-bottom: 38px;
+  color: #1f2937;
+  text-shadow: 0 2px 10px rgba(255,255,255,0.65);
+}
+
+.home-text .accent {
+  display: inline-block;
+  color: #3b6fb6;
+  font-weight: 900;
+  position: relative;
+}
+
+.home-text .accent::after {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 8px;
+  margin-top: -6px;
+  border-radius: 999px;
+  background: rgba(59, 111, 182, 0.18);
+}
+
+.home-illustration {
+  width: 100%;
+  max-width: 340px;
+  display: block;
+  opacity: 0.96;
+}
+
+.hero-card {
+  background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
+  border-radius: 24px; padding: 24px;
+  color: white; position: relative; overflow: hidden;
+}
+.hero-card::after {
+  content: '🚦';
+  position: absolute; right: 16px; bottom: -8px;
+  font-size: 72px; opacity: .18;
+}
+.hero-card h2 { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+.hero-card p  { font-size: 13px; opacity: .85; line-height: 1.5; }
+
+.quick-stats {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.qs-card {
+  background: var(--white); border-radius: 18px;
+  padding: 16px; display: flex; flex-direction: column; gap: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.qs-icon { font-size: 24px; }
+.qs-val  { font-size: 24px; font-weight: 900; color: var(--blue); }
+.qs-val.red { color: var(--red); }
+.qs-lbl  { font-size: 11px; color: var(--sub); font-weight: 600; letter-spacing: .3px; }
+
+.chips-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip {
+  padding: 6px 14px;
+  background: var(--blue-lt); color: var(--blue);
+  border-radius: 20px; font-size: 12px; font-weight: 700;
+  border: 1.5px solid var(--blue-md);
+}
+
+#sCamera { background: var(--white); }
+
+.cam-header {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 10px;
+  flex-shrink: 0;
+}
+.back-btn {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: var(--blue-lt); color: var(--blue);
+  border: none; font-size: 17px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.cam-title { font-size: 17px; font-weight: 800; color: var(--text); }
+
+.viewer-wrap {
+  margin: 14px;
+  border-radius: 20px;
+  overflow: hidden;
+  background: #0f172a;
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.viewer-placeholder {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 10px; color: rgba(255,255,255,.35);
+}
+.viewer-placeholder .big-icon { font-size: 44px; opacity: .5; }
+.viewer-placeholder p { font-size: 13px; font-weight: 600; }
+
+#resultImg {
+  width: 100%; height: 100%; object-fit: contain;
+  display: none;
+}
+
+.brackets {
+  position: absolute; inset: 10px; pointer-events: none; z-index: 5;
+}
+.brackets::before, .brackets::after,
+.brackets .br::before, .brackets .br::after {
+  content: ''; position: absolute;
+  width: 30px; height: 30px;
+}
+.brackets::before  { top:0; left:0; border-top:3px solid var(--blue); border-left:3px solid var(--blue); }
+.brackets::after   { top:0; right:0; border-top:3px solid var(--blue); border-right:3px solid var(--blue); }
+.brackets .br::before { bottom:0; left:0; border-bottom:3px solid var(--blue); border-left:3px solid var(--blue); }
+.brackets .br::after  { bottom:0; right:0; border-bottom:3px solid var(--blue); border-right:3px solid var(--blue); }
+
+.hud-tl {
+  position: absolute; top: 10px; left: 10px; z-index: 10;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.hud-tr {
+  position: absolute; top: 10px; right: 10px; z-index: 10;
+}
+.hud-badge {
+  padding: 6px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 800;
+  backdrop-filter: blur(6px);
+}
+.hud-alert {
+  background: rgba(220,38,38,.88); color: white;
+  display: none; align-items: center; gap: 5px;
+  animation: pulse .5s ease-in-out infinite alternate;
+}
+.hud-alert.show { display: flex; }
+@keyframes pulse { to { box-shadow: 0 0 12px rgba(220,38,38,.6); } }
+.hud-fps {
+  background: rgba(0,0,0,.55); color: #4ade80;
+  font-family: monospace; display: none;
+}
+.hud-fps.show { display: block; }
+
+.viewer-progress {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: rgba(255,255,255,.1); display: none;
+}
+.viewer-progress.show { display: block; }
+.viewer-progress-fill {
+  height: 100%; background: var(--blue); width: 0%;
+  transition: width .3s;
+  box-shadow: 0 0 8px var(--blue);
+}
+
+#statsStrip {
+  display: none !important;
+}
+
+.stats-strip {
+  margin: 0 14px 10px;
+  background: var(--blue-lt);
+  border-radius: 16px; padding: 12px 16px;
+  display: none; gap: 0; flex-shrink: 0;
+}
+.stats-strip.show { display: flex; }
+.ss-item { flex: 1; text-align: center; }
+.ss-val   { font-size: 22px; font-weight: 900; color: var(--blue); }
+.ss-val.red   { color: var(--red); }
+.ss-val.green { color: var(--green); }
+.ss-lbl   { font-size: 10px; color: var(--sub); font-weight: 700; letter-spacing: .5px; margin-top: 2px; }
+.ss-div   { width: 1px; background: var(--border); }
+
+.upload-wrap { padding: 0 14px 6px; flex-shrink: 0; }
+.btn-upload {
+  width: 100%; padding: 14px;
+  background: var(--blue); color: white;
+  border: none; border-radius: 16px;
+  font-size: 15px; font-weight: 800;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px;
+  transition: all .18s; font-family: 'Nunito', sans-serif;
+  box-shadow: 0 4px 16px rgba(37,99,235,.3);
+}
+.btn-upload:active { transform: scale(.97); }
+.btn-upload:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+.status-msg {
+  text-align: center; font-size: 12px; font-weight: 600;
+  color: var(--sub); padding: 4px 14px 8px;
+  min-height: 20px; flex-shrink: 0;
+}
+.status-msg.processing { color: var(--blue); }
+.status-msg.done       { color: var(--green); }
+.status-msg.error      { color: var(--red); }
+
+#sAbout { background: var(--white); }
+.about-scroll { flex: 1; overflow-y: auto; padding: 0 20px 20px; }
+
+.about-hero {
+  background: linear-gradient(135deg, var(--blue) 0%, #1e40af 100%);
+  margin: 0 -20px; padding: 28px 20px 24px;
+  color: white; text-align: center;
+}
+.about-hero .a-icon { font-size: 48px; margin-bottom: 8px; }
+.about-hero h2 { font-size: 20px; font-weight: 900; }
+.about-hero p  { font-size: 12px; opacity: .75; margin-top: 4px; }
+
+.about-section { margin-top: 20px; }
+.about-section h3 { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+
+.sanamj-section { margin-top: 20px;}
+.sanamj-section h3 { font-size: 15px; font-weight: 800; color: var(--text); margin-bottom: 12px; }
+
+.algo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.algo-card {
+  background: var(--blue-lt); border-radius: 14px; padding: 12px;
+}
+.algo-name { font-size: 14px; font-weight: 900; color: var(--blue); }
+.algo-desc { font-size: 11px; color: var(--sub); margin-top: 3px; line-height: 1.4; }
+
+.feat-list { display: flex; flex-direction: column; gap: 8px; }
+.feat-row {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--bg); border-radius: 12px; padding: 10px 14px;
+}
+.feat-icon { font-size: 20px; }
+.feat-text { font-size: 13px; font-weight: 600; color: var(--text); }
+
+#sGuide { background: var(--white); }
+.guide-scroll { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.step-card {
+  background: var(--bg); border-radius: 18px; padding: 16px;
+  display: flex; gap: 14px; align-items: flex-start;
+}
+.step-num {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--blue); color: white;
+  font-size: 14px; font-weight: 900;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-body h4 { font-size: 14px; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.step-body p  { font-size: 13px; color: var(--sub); line-height: 1.5; }
+
+.tip-card {
+  background: #FFF7ED; border-radius: 16px;
+  padding: 14px 16px; border-left: 4px solid var(--orange);
+}
+.tip-card h4 { font-size: 13px; font-weight: 800; color: var(--orange); margin-bottom: 10px; }
+.tip-row { display: flex; gap: 8px; margin-bottom: 6px; }
+.tip-row::before { content:'•'; color: var(--orange); font-weight: 900; flex-shrink: 0; }
+.tip-row p { font-size: 13px; color: #7C2D12; line-height: 1.4; }
+
+.bottom-nav {
+  height: 74px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 8px 8px;
+  flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; border: none; background: none;
+  cursor: pointer; padding: 6px 4px;
+  border-radius: 14px; transition: background .15s;
+  font-family: 'Nunito', sans-serif;
+}
+.nav-btn:active { background: var(--blue-lt); }
+.nav-icon-wrap {
+  width: 46px; height: 46px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; transition: all .2s;
+}
+.nav-btn.active .nav-icon-wrap {
+  background: var(--blue);
+  box-shadow: 0 4px 14px rgba(37,99,235,.35);
+  font-size: 24px;
+}
+.nav-lbl { font-size: 11px; font-weight: 700; color: var(--sub); }
+.nav-btn.active .nav-lbl { color: var(--blue); }
+
+#fileInput { display: none; }
+</style>
+</head>
+<body>
+<input type="file" id="fileInput" accept="video/*">
+
+<div class="phone">
+  <div class="notch"></div>
+
+  <div class="statusbar">
+    <span id="clockEl">9:41</span>
+    <span> 📶🛜🔋</span>
+  </div>
+
+  <div class="screen active" id="sHome">
+  <div class="home-scroll">
+    <div class="home-header">
+      <div class="home-title">Замын тэмдэг таних систем</div>
+    </div>
+
+    <div class="home-body">
+      <div class="home-text">
+        Авто замын тэмдгийг танин,<br>
+        жолоочид анхааруулах
+      </div>
+
+      <img src="/static/img/car.png" alt="car" class="home-illustration">
+    </div>
+  </div>
+
+  <div class="bottom-nav">
+    <button class="nav-btn active" onclick="go('home')">
+      <div class="nav-icon-wrap">🏠</div>
+      <span class="nav-lbl">Нүүр</span>
+    </button>
+    <button class="nav-btn" onclick="go('camera')">
+      <div class="nav-icon-wrap">📷</div>
+      <span class="nav-lbl">Камер</span>
+    </button>
+    <button class="nav-btn" onclick="go('about')">
+      <div class="nav-icon-wrap">···</div>
+      <span class="nav-lbl">Тухай</span>
+    </button>
+  </div>
+</div>
+
+  <div class="screen" id="sCamera">
+    <div class="cam-header">
+      <button class="back-btn" onclick="go('home')">←</button>
+      <span class="cam-title">Замын тэмдэг таних</span>
+    </div>
+
+    <div class="viewer-wrap" id="viewerWrap">
+      <div class="viewer-placeholder" id="viewerPlaceholder">
+        <div class="big-icon">🎬</div>
+        <p>Видео файл оруулна уу</p>
+      </div>
+
+      <img id="resultImg" alt="Result">
+
+      <div class="brackets"><div class="br"></div></div>
+
+      <div class="hud-tl">
+        <div class="hud-badge hud-alert" id="hudAlert">⚠ ALERT</div>
+      </div>
+      <div class="hud-tr">
+        <div class="hud-badge hud-fps" id="hudFps">0 FPS</div>
+      </div>
+
+      <div class="viewer-progress" id="viewerProgress">
+        <div class="viewer-progress-fill" id="viewerProgressFill"></div>
+      </div>
+    </div>
+
+    <div class="stats-strip" id="statsStrip">
+      <div class="ss-item">
+        <div class="ss-val red" id="ssDetected">0</div>
+        <div class="ss-lbl">Илрүүлэлт</div>
+      </div>
+      <div class="ss-div"></div>
+      <div class="ss-item">
+        <div class="ss-val green" id="ssDist">—</div>
+        <div class="ss-lbl">Зай (м)</div>
+      </div>
+      <div class="ss-div"></div>
+      <div class="ss-item">
+        <div class="ss-val" id="ssFps">—</div>
+        <div class="ss-lbl">FPS</div>
+      </div>
+    </div>
+
+    <div class="upload-wrap">
+      <button class="btn-upload" id="uploadBtn" onclick="document.getElementById('fileInput').click()">
+        📽️ Бичлэг хадгалах
+      </button>
+    </div>
+
+    <div class="status-msg" id="statusMsg">Видео файл оруулаад эхлүүлнэ үү</div>
+
+    <div class="bottom-nav">
+      <button class="nav-btn" onclick="go('home')">
+        <div class="nav-icon-wrap">🏠</div>
+        <span class="nav-lbl">Нүүр</span>
+      </button>
+      <button class="nav-btn active" onclick="go('camera')">
+        <div class="nav-icon-wrap">📷</div>
+        <span class="nav-lbl">Камер</span>
+      </button>
+      <button class="nav-btn" onclick="go('guide')">
+        <div class="nav-icon-wrap">📋</div>
+        <span class="nav-lbl">Заавар</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="screen" id="sAbout">
+    <div class="about-scroll">
+      <div class="about-hero">
+        <div class="a-icon">🚦</div>
+        <h2>Системийн тухай</h2>
+      </div>
+
+      <div class="about-section">
+        <h3>Тайлбар</h3>
+        <p style="font-size:13px;color:var(--sub);line-height:1.6">
+          Энэхүү систем нь замын хөдөлгөөний тэмдгийг камерын дүрсээс
+          feature-based аргаар илрүүлж, жолоочид анхааруулга өгдөг.
+          OpenCV SIFT + RANSAC алгоритм ашигласнаар хөнгөн ажиллах боломжтой.
+        </p>
+      </div>
+
+      <div class="about-section">
+        <h3>Алгоритм</h3>
+        <div class="algo-grid">
+          <div class="algo-card"><div class="algo-name">SIFT</div><div class="algo-desc">Онцлог цэг илрүүлэх</div></div>
+          <div class="algo-card"><div class="algo-name">FLANN</div><div class="algo-desc">Хурдан descriptor харьцуулалт</div></div>
+          <div class="algo-card"><div class="algo-name">RANSAC</div><div class="algo-desc">Геометр баталгаажуулалт</div></div>
+          <div class="algo-card"><div class="algo-name">CSRT</div><div class="algo-desc">Объект дагах tracker</div></div>
+          <div class="algo-card"><div class="algo-name">NMS</div><div class="algo-desc">Давхардсан box арилгах</div></div>
+          <div class="algo-card"><div class="algo-name">Homography</div><div class="algo-desc">Геометрийн хувиргалт</div></div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <h3>Боломжууд</h3>
+        <div class="feat-list">
+          <div class="feat-row"><span class="feat-icon">🎬</span><span class="feat-text">Камерын дүрсээс замын тэмдэг илрүүлэх</span></div>
+          <div class="feat-row"><span class="feat-icon">🔍</span><span class="feat-text">Олон тэмдэг нэгэн зэрэг таних</span></div>
+          <div class="feat-row"><span class="feat-icon">🚙</span><span class="feat-text">Зай тооцоолох</span></div>
+          <div class="feat-row"><span class="feat-icon">⚠️</span><span class="feat-text">Анхааруулга өгөх</span></div>
+          <div class="feat-row"><span class="feat-icon">📽️</span><span class="feat-text">Бичлэг хадгалах</span></div>
+        </div>
+      </div>
+
+      <div class="sanamj-section">
+        <h3>Санамж</h3>
+        <div class="feat-list">
+          <div class="feat-row"><span class="feat-text">Замын тэмдэг хол, бүдэг байвал танилт буурч болно.</span></div>
+          <div class="feat-row"><span class="feat-text">Хотын хөдөлгөөнтэй, бага хурдтай нөхцөлд ашиглахад илүү тохиромжтой.</span></div>
+          <div class="feat-row"><span class="feat-text">Энэхүү систем нь жолоочид туслах болон туршилтын зориулалттай.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-btn" onclick="go('home')">
+        <div class="nav-icon-wrap">🏠</div>
+        <span class="nav-lbl">Нүүр</span>
+      </button>
+      <button class="nav-btn" onclick="go('camera')">
+        <div class="nav-icon-wrap">📷</div>
+        <span class="nav-lbl">Камер</span>
+      </button>
+      <button class="nav-btn active">
+        <div class="nav-icon-wrap">···</div>
+        <span class="nav-lbl">Тухай</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="screen" id="sGuide">
+    <div class="cam-header">
+      <button class="back-btn" onclick="go('camera')">←</button>
+      <span class="cam-title">Систем ашиглах заавар</span>
+    </div>
+
+    <div class="guide-scroll">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h4>Камер хэсэг рүү орох</h4>
+          <p>Доод цэснээс 📷 товчийг дарж камерын хэсэгт орно.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h4>Камераа зам руу чиглүүлэх</h4>
+          <p>Утсаа тогтвортой байрлуулж, урд замыг камертаа оруулна.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Систем танилт хийхийг хүлээх</h4>
+          <p>Систем нь замын тэмдгийг автоматаар илрүүлж, анхааруулгыг дэлгэц дээр харуулна.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h4>Бичлэг хадгалах</h4>
+          <p>Шаардлагатай тохиолдолд "Бичлэг хадгалах" товчийг дарж дүрсийг видео болгон хадгална.</p>
+        </div>
+      </div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h4>Үр дүнг ашиглах</h4>
+          <p>Илэрсэн тэмдэг, анхааруулга, зай болон бусад мэдээллийг дэлгэцээс харна.</p>
+        </div>
+      </div>
+
+      <div class="tip-card">
+        <h4>⚠️ Анхаарах зүйлс</h4>
+        <div class="tip-row"><p>Утсыг хөдөлгөөн багатай, тогтвортой байрлуулах</p></div>
+        <div class="tip-row"><p>Камерыг урд замыг бүрэн харахаар чиглүүлэх</p></div>
+        <div class="tip-row"><p>Гэрэлтүүлэг сайн үед танилт илүү найдвартай байна.</p></div>
+        <div class="tip-row"><p>Замын тэмдэг хэт хол байвал танилтын чанар буурч болно.</p></div>
+        <div class="tip-row"><p>Энэхүү систем нь туршилтын зориулалттай тул бодит жолоодлогын үед зөвхөн туслах хэрэгсэл байдлаар ашиглана.</p></div>
+      </div>
+    </div>
+
+    <div class="bottom-nav">
+      <button class="nav-btn" onclick="go('home')">
+        <div class="nav-icon-wrap">🏠</div>
+        <span class="nav-lbl">Нүүр</span>
+      </button>
+      <button class="nav-btn" onclick="go('camera')">
+        <div class="nav-icon-wrap">📷</div>
+        <span class="nav-lbl">Камер</span>
+      </button>
+      <button class="nav-btn active">
+        <div class="nav-icon-wrap">📋</div>
+        <span class="nav-lbl">Заавар</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SCREENS = { home:'sHome', camera:'sCamera', about:'sAbout', guide:'sGuide' };
+function go(name) {
+  Object.values(SCREENS).forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById(SCREENS[name]).classList.add('active');
+}
+
+function tick() {
+  const n = new Date();
+  document.getElementById('clockEl').textContent =
+    String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+}
+tick();
+setInterval(tick, 15000);
+
+async function loadTemplates() {
+  try {
+    const r = await fetch('/api/templates');
+    const d = await r.json();
+    document.getElementById('homeTemplateCount').textContent = d.count;
+  } catch(e) {
+    document.getElementById('homeTemplateCount').textContent = '—';
+  }
+}
+loadTemplates();
+
+document.getElementById('fileInput').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  e.target.value = '';
+
+  go('camera');
+  resetUI();
+  setStatusMsg('Файл upload хийж байна…', 'processing');
+  document.getElementById('uploadBtn').disabled = true;
+
+  const fd = new FormData();
+  fd.append('video', file);
+
+  try {
+    const res = await fetch('/api/upload_and_process', { method:'POST', body: fd });
+    const data = await res.json();
+
+    if (!data.success) {
+      setStatusMsg('Алдаа: ' + (data.error || 'Unknown'), 'error');
+      document.getElementById('uploadBtn').disabled = false;
+      return;
+    }
+
+    startPolling();
+  } catch(err) {
+    setStatusMsg('Серверт холбогдож чадсангүй', 'error');
+    document.getElementById('uploadBtn').disabled = false;
+  }
+});
+
+let pollInterval = null;
+let totalDetAll = 0;
+let autoPollStarted = false;
+
+function startPolling() {
+  clearInterval(pollInterval);
+  document.getElementById('viewerProgress').classList.add('show');
+
+  pollInterval = setInterval(async () => {
+    await pollStatus();
+    await pollFrame();
+  }, 180);
+}
+
+async function pollStatus() {
+  try {
+    const r = await fetch('/api/status');
+    const d = await r.json();
+
+    document.getElementById('viewerProgressFill').style.width = (d.progress || 0) + '%';
+
+    if (d.status === 'processing') {
+      setStatusMsg(d.message || 'Боловсруулж байна…', 'processing');
+    } else if (d.status === 'done') {
+      setStatusMsg(d.message || 'Дууслаа!', 'done');
+      clearInterval(pollInterval);
+      document.getElementById('uploadBtn').disabled = false;
+      document.getElementById('viewerProgressFill').style.width = '100%';
+    } else if (d.status === 'error') {
+      setStatusMsg(d.message || 'Алдаа гарлаа', 'error');
+      clearInterval(pollInterval);
+      document.getElementById('uploadBtn').disabled = false;
+    } else {
+      setStatusMsg(d.message || 'Бэлэн');
+      document.getElementById('uploadBtn').disabled = false;
+    }
+
+    if (d.detected_frames > 0 || d.status === 'done' || d.status === 'processing') {
+      document.getElementById('statsStrip').classList.add('show');
+      document.getElementById('ssDetected').textContent = d.detected_frames || 0;
+      document.getElementById('ssFps').textContent = d.fps ? d.fps.toFixed(1) : '—';
+      totalDetAll = d.detected_frames || 0;
+      document.getElementById('homeTotalDet').textContent = totalDetAll;
+    }
+
+    if (d.detections_log && d.detections_log.length > 0) {
+      const lastEntry = d.detections_log[d.detections_log.length - 1];
+      if (lastEntry && lastEntry.distance !== null && lastEntry.distance !== undefined) {
+        document.getElementById('ssDist').textContent = lastEntry.distance;
+      }
+
+      document.getElementById('hudAlert').classList.add('show');
+      clearTimeout(window.alertHideTimer);
+      window.alertHideTimer = setTimeout(() => {
+        document.getElementById('hudAlert').classList.remove('show');
+      }, 1500);
+    }
+
+  } catch(e) {}
+}
+
+async function pollFrame() {
+  try {
+    const r = await fetch('/api/current_frame');
+    const d = await r.json();
+    if (d.frame) {
+      const img = document.getElementById('resultImg');
+      img.src = d.frame;
+      img.style.display = 'block';
+      document.getElementById('viewerPlaceholder').style.display = 'none';
+
+      document.getElementById('hudFps').classList.add('show');
+      document.getElementById('hudFps').textContent =
+        (document.getElementById('ssFps').textContent || '—') + ' FPS';
+    }
+  } catch(e) {}
+}
+
+function resetUI() {
+  document.getElementById('resultImg').style.display = 'none';
+  document.getElementById('viewerPlaceholder').style.display = 'flex';
+  document.getElementById('statsStrip').classList.remove('show');
+  document.getElementById('viewerProgress').classList.remove('show');
+  document.getElementById('viewerProgressFill').style.width = '0%';
+  document.getElementById('hudAlert').classList.remove('show');
+  document.getElementById('hudFps').classList.remove('show');
+  document.getElementById('ssDist').textContent = '—';
+}
+
+function setStatusMsg(msg, cls='') {
+  const el = document.getElementById('statusMsg');
+  el.textContent = msg;
+  el.className = 'status-msg ' + cls;
+}
+
+window.addEventListener('load', async () => {
+  go('home');
+  resetUI();
+  setStatusMsg('Default видео шалгаж байна…', 'processing');
+
+  if (!autoPollStarted) {
+    autoPollStarted = true;
+    startPolling();
+  }
+});
+</script>
+</body>
+</html>
