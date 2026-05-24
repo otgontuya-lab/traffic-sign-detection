@@ -118,7 +118,7 @@ http://localhost:5000
 5. Дараа нь:
 
 ```bash
-python c.py
+python camera.py
 ```
 командыг ажиллуулна.
 
