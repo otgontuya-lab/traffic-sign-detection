@@ -5,7 +5,7 @@ import base64
 import threading
 import uuid
 
-from multi import MultiTrackerRuntime, TEMPLATE_DIR
+from traffic import MultiTrackerRuntime, TEMPLATE_DIR
 
 app = Flask(__name__, static_folder="static", template_folder="static")
 
