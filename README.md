@@ -31,14 +31,14 @@
 ## Төслийн бүтэц
 
 ```txt
-traffic.py          → Видео боловсруулах үндсэн алгоритм
-web_server.py     → Flask веб сервер
-camera.py              → Бодит камер дээр ажиллуулах код
-templates/        → Замын тэмдгийн template зургууд
-static/           → Веб интерфейсийн файлууд
-videos/           → Туршилтын видео
-detected_frames/  → Илэрсэн frame хадгалах folder
-requirements.txt  → Ашигласан сангууд
+traffic.py        - Видео боловсруулах үндсэн алгоритм
+web_server.py     - Flask веб сервер
+camera.py         - Бодит камер дээр ажиллуулах код
+templates/        - Замын тэмдгийн template зургууд
+static/           - Веб интерфейсийн файлууд
+videos/           - Туршилтын видео
+detected_frames/  - Илэрсэн frame хадгалах folder
+requirements.txt  - Ашигласан сангууд
 ```
 
 ---
